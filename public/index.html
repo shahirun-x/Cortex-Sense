@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cortex-Sense EEG Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Cortex-Sense EEG Live Stream</h1>
+  <p>Status: <span id="status">Connecting...</span></p>
+  <canvas id="eegChart" width="600" height="300"></canvas>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const ctx = document.getElementById("eegChart").getContext("2d");
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          { label: "Alpha", data: [], borderColor: "blue", fill: false },
+          { label: "Beta", data: [], borderColor: "green", fill: false },
+          { label: "Theta", data: [], borderColor: "red", fill: false }
+        ]
+      },
+      options: { responsive: true, scales: { x: { display: false } } }
+    });
+
+    const ws = new WebSocket(`ws://${window.location.host}`);
+
+    ws.onopen = () => {
+      statusEl.textContent = "Connected";
+      statusEl.style.color = "green";
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("EEG Data:", data);
+
+      chart.data.labels.push(new Date(data.timestamp).toLocaleTimeString());
+      chart.data.datasets[0].data.push(data.bands.alpha);
+      chart.data.datasets[1].data.push(data.bands.beta);
+      chart.data.datasets[2].data.push(data.bands.theta);
+
+      if (chart.data.labels.length > 20) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(ds => ds.data.shift());
+      }
+
+      chart.update();
+    };
+
+    ws.onclose = () => {
+      statusEl.textContent = "Disconnected";
+      statusEl.style.color = "red";
+    };
+  </script>
+</body>
+</html>
