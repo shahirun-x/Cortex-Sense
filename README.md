@@ -52,22 +52,33 @@ graph LR
     Intervention --> UI
 
 EEG Device/Simulator: Streams raw or synthetic EEG states
+
 Preprocessing: Filters & feature extraction (band power, etc.)
+
 Classifier: Lightweight model (rule-based or TFJS) for EEG state
+
 Intervention: Triggers personalized text/audio/AR responses
+
 UI: Displays state, interventions, and consent modal
 
 ## Ethics & Privacy
 
 All EEG data processing happens locally on the user’s device by default
+
 No raw EEG data is uploaded externally unless explicitly authorized
+
 Consent modal is presented before any data collection begins
+
 Users can revoke consent and clear stored data at any time
 
 ## Contributing
+
 Contributions are welcome! Please open issues or pull requests for bugs, features, or improvements.
 
-Contact
+## Contact
+
 Developed by Shahirun
+
 Email: shahirun.x.com
+
 GitHub: https://github.com/shahirun-x
