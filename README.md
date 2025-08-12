@@ -1,35 +1,26 @@
-# Cortex-Sense  
-*Neuroadaptive learning with real-time EEG state detection and personalized micro-interventions*
+# Cortex-Sense
+**Real-time Neuroadaptive Learning Interface** — Detects cognitive states (focus, relaxation, drowsiness) from EEG signals and delivers adaptive, personalized micro-interventions to improve engagement and memory retention.  
+
+![EEG Live Graph](./screenshot.png)
 
 ---
 
-## Overview  
-Cortex-Sense is a neuroadaptive learning demo that uses synthetic EEG data (simulated or real) to detect user states like Focused, Drowsy, Relaxed, or Neutral in real-time. Based on these states, it triggers personalized interventions such as text analogies, audio cues, or AR overlays to help learners stay engaged and improve memory retention.  
-
-All EEG processing and classification run locally with explicit user consent and a privacy-first design.
-
----
-
-## Features  
-- Real-time EEG simulation via WebSocket  
-- State classification: Focused, Drowsy, Relaxed, Neutral  
-- Modular intervention pipeline (text/audio/AR)  
-- Privacy-first: all data processed locally by default  
-- Consent modal for user approval  
+## Features
+- **EEG Signal Streaming** — Real-time processing from OpenBCI or simulated EEG data.
+- **State Classification** — Detects focus, relaxation, and drowsiness using band-power analysis + ML.
+- **Micro-Interventions** — Personalized learning cues (text, audio, AR).
+- **Privacy-First** — Local EEG processing with explicit consent and data deletion options.
+- **Simulation Mode** — Judges can run without EEG hardware using a built-in data generator.
+- **One-Click Deployment** — Works locally or as a PWA.
 
 ---
 
-## Getting Started  
+## 📦 Installation
 
-### Prerequisites  
-- Node.js (v18+) and npm installed  
-- Optional: real EEG device (OpenBCI) for live data  
-
-### Installation  
+### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/shahirun-x/cortex-sense.git
-cd cortex-sense
-npm install
+git clone https://github.com/shahirun-x/Cortex-Sense.git
+cd Cortex-Sense
 ```
 ## Running the EEG Simulator
 Simulates EEG data stream locally without hardware:
