@@ -1,7 +1,7 @@
 # Cortex-Sense
 **Real-time Neuroadaptive Learning Interface** — Detects cognitive states (focus, relaxation, drowsiness) from EEG signals and delivers adaptive, personalized micro-interventions to improve engagement and memory retention.  
 
-![EEG Graph](./Screenshot_2025-08-12_131749.png)
+![EEG Graph](./livegraph.png)
 
 ---
 
