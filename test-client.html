@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EEG Data Stream</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Pulse glow effect for bars */
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0px rgba(255, 255, 255, 0.8); }
+            50%  { box-shadow: 0 0 15px rgba(255, 255, 255, 0.9); }
+            100% { box-shadow: 0 0 0px rgba(255, 255, 255, 0.8); }
+        }
+        .pulse {
+            animation: pulse 0.5s ease-out;
+        }
+
+        /* Log entry fade */
+        .fade-old {
+            opacity: 0.4;
+        }
+        .fade-mid {
+            opacity: 0.7;
+        }
+        .fade-new {
+            opacity: 1;
+        }
+
+        /* Countdown progress bar */
+        #countdown-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #countdown-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4cafef, #8bc34a);
+            width: 100%;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <h2>EEG Data Stream</h2>
+
+    <div id="log" style="white-space: pre-line; border:1px solid #ccc; padding:10px; height:200px; overflow-y:scroll; font-family: monospace;"></div>
+
+    <h3 id="chart-title">EEG State Chart (Last 60 Seconds) — Reset in 60s</h3>
+
+    <!-- Countdown bar -->
+    <div id="countdown-bar-container">
+        <div id="countdown-bar"></div>
+    </div>
+
+    <canvas id="eegChart" width="400" height="200"></canvas>
+
+    <script>
+        const logDiv = document.getElementById("log");
+        const chartTitle = document.getElementById("chart-title");
+        const countdownBar = document.getElementById("countdown-bar");
+
+        // Chart.js setup
+        const ctx = document.getElementById("eegChart").getContext("2d");
+        const stateLabels = ["Focused", "Drowsy", "Relaxed", "Neutral"];
+        const stateColors = ["#4cafef", "#ff9800", "#8bc34a", "#9e9e9e"];
+        let stateCounts = [0, 0, 0, 0];
+
+        const eegChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: stateLabels,
+                datasets: [{
+                    label: "EEG State Count (Last 60s)",
+                    data: stateCounts,
+                    backgroundColor: stateColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 600,
+                    easing: "easeOutQuart"
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Connect to WebSocket
+        const socket = new WebSocket("ws://localhost:8080");
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            const index = stateLabels.indexOf(data.state);
+
+            // Fade existing log entries
+            Array.from(logDiv.children).forEach((entry, i) => {
+                entry.classList.remove("fade-new", "fade-mid", "fade-old");
+                if (i === logDiv.children.length - 1) {
+                    entry.classList.add("fade-mid");
+                } else {
+                    entry.classList.add("fade-old");
+                }
+            });
+
+            // Create new log entry
+            const logLine = document.createElement("div");
+            logLine.textContent = `${time} - ${data.state}`;
+            logLine.classList.add("fade-new");
+            if (index !== -1) {
+                logLine.style.color = stateColors[index];
+                stateCounts[index]++;
+
+                // Flash the bar
+                const originalColor = stateColors[index];
+                eegChart.data.datasets[0].backgroundColor[index] = "white";
+                eegChart.update();
+
+                setTimeout(() => {
+                    eegChart.data.datasets[0].backgroundColor[index] = originalColor;
+                    eegChart.update();
+                }, 300);
+            }
+
+            logDiv.appendChild(logLine);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        // Countdown logic
+        let countdown = 60;
+
+        function updateCountdown() {
+            chartTitle.textContent = `EEG State Chart (Last 60 Seconds) — Reset in ${countdown}s`;
+
+            // Update bar width
+            countdownBar.style.width = (countdown / 60) * 100 + "%";
+
+            countdown--;
+
+            if (countdown < 0) {
+                stateCounts = [0, 0, 0, 0];
+                eegChart.data.datasets[0].data = stateCounts;
+                eegChart.update();
+                countdown = 60;
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
