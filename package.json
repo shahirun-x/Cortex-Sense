@@ -1,27 +1,27 @@
 {
   "name": "cortex-sense",
   "version": "1.0.0",
-  "description": "Cortex-Sense is a neuroadaptive learning prototype that uses EEG data to detect focus and drowsiness, delivering real-time personalized interventions via text, audio, or AR.",
+  "description": "Cortex-Sense: Neuroadaptive EEG learning assistant with real-time state detection and simulated EEG streaming for hackathon demo.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "simulate-eeg": "node eeg-simulator.js",
-    "dev": "npm run simulate-eeg & npm start"
+    "simulate-eeg": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "EEG",
-    "brain-computer-interface",
-    "neuroadaptive-learning",
-    "focus-detection",
-    "drowsiness-detection",
-    "AR",
-    "BCI"
+    "Brain-Computer Interface",
+    "Neuroadaptive Learning",
+    "Hackathon",
+    "WebSocket",
+    "Cortex-Sense"
   ],
-  "author": "Shahirun",
+  "author": "Shahirun <shahirun.x@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "chart.js": "^4.4.0",
-    "ws": "^8.13.0"
+    "ws": "^8.17.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
 }
