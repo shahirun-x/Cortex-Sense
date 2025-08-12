@@ -1,24 +1,27 @@
 {
   "name": "cortex-sense",
   "version": "1.0.0",
-  "description": "Cortex-Sense: Neuroadaptive EEG learning assistant with real-time state detection and simulated EEG streaming for hackathon demo.",
+  "description": "Cortex-Sense: Neuroadaptive EEG learning assistant with real-time state detection, WebSocket EEG simulation, and visualization tools.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "simulate-eeg": "node index.js",
+    "simulate-eeg": "node eeg-simulator.js",
     "dev": "nodemon index.js"
   },
   "keywords": [
     "EEG",
     "Brain-Computer Interface",
     "Neuroadaptive Learning",
-    "Hackathon",
     "WebSocket",
+    "Express",
+    "Chart.js",
     "Cortex-Sense"
   ],
   "author": "Shahirun <shahirun.x@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^4.4.0",
+    "express": "^4.19.2",
     "ws": "^8.17.0"
   },
   "devDependencies": {
