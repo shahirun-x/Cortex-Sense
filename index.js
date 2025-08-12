@@ -1,31 +1,66 @@
-// Load the WebSocket library
-const WebSocket = require('ws');
+// index.js
+// Cortex-Sense backend: Express server + WebSocket EEG simulation
 
-// Create a WebSocket server on port 8080
-const wss = new WebSocket.Server({ port: 8080 });
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+const path = require("path");
 
-console.log("EEG Simulator running on ws://localhost:8080");
+// =========================
+// Server Setup
+// =========================
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-// Example EEG states (here i have taken 4)
-const eegStates = ["Focused", "Drowsy", "Relaxed", "Neutral"];
+// Serve static frontend (index.html)
+app.use(express.static(path.join(__dirname, "public")));
 
-// Send EEG state every second (you can go for every minute also)
-wss.on('connection', (ws) => {
-    console.log("Client connected");
+// Simple health route
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", name: "Cortex-Sense" });
+});
 
-    const sendData = () => {
-        const state = eegStates[Math.floor(Math.random() * eegStates.length)];
-        const eegData = {
-            timestamp: Date.now(),
-            state: state
-        };
-        ws.send(JSON.stringify(eegData));
-    };
+// =========================
+// EEG Simulation Logic
+// =========================
+function getRandomEEGState() {
+  const states = ["focused", "relaxed", "drowsy"];
+  return states[Math.floor(Math.random() * states.length)];
+}
 
-    const interval = setInterval(sendData, 1000);
+function generateEEGData() {
+  return {
+    timestamp: Date.now(),
+    state: getRandomEEGState(),
+    bands: {
+      alpha: Math.random() * 100,
+      beta: Math.random() * 100,
+      theta: Math.random() * 100
+    }
+  };
+}
 
-    ws.on('close', () => {
-        clearInterval(interval);
-        console.log("Client disconnected");
-    });
+// Send EEG data every second to connected clients
+wss.on("connection", (ws) => {
+  console.log("New WebSocket client connected.");
+
+  const interval = setInterval(() => {
+    const data = generateEEGData();
+    ws.send(JSON.stringify(data));
+  }, 1000);
+
+  ws.on("close", () => {
+    console.log("Client disconnected.");
+    clearInterval(interval);
+  });
+});
+
+// =========================
+// Start Server
+// =========================
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Cortex-Sense server running at http://localhost:${PORT}`);
+  console.log(`WebSocket endpoint at ws://localhost:${PORT}`);
 });
